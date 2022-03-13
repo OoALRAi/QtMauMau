@@ -12,4 +12,4 @@ class ServerInitController:
 
     def start_server_action(self):
         print("start server...")
-        self.mainWindow.enter_game()
+        self.mainWindow.init_server()

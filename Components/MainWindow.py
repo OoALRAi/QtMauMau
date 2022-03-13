@@ -1,20 +1,21 @@
 from PyQt5 import QtGui, uic
-from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets import QStackedWidget
 
-import Server.Server
+from Controllers.WaitingViewController import WaitingViewController
+from Server.Server import start_server
 from Components.LoginView import LoginView
 from Components.ServerInitView import ServerInitView
 from Constants import *
 from Controllers.ClilentInitController import ClientInitController
 from Controllers.LoginController import LoginController
 from Controllers.ServerInitController import ServerInitController
-import threading
 
 
 class MainWindow(QStackedWidget):
     def __init__(self):
         super().__init__()
+        self.waiting_view = None
+        self.waiting_view_controller = None
         self.thread_pool = None
         self.server = None
         self.login_view = None
@@ -50,9 +51,14 @@ class MainWindow(QStackedWidget):
             self.addWidget(self.client_view)
         self.setCurrentWidget(self.client_view)
 
-    def enter_game(self):
-        print("enter game")
-        self.init_server_thread()
+    def show_waiting_view(self):
+        if not self.waiting_view:
+            self.waiting_view = uic.loadUi(f'{COMPONENTS_UI_PATH}WaitingView.ui')
+            self.waiting_view_controller = WaitingViewController(self.waiting_view, self)
+            self.addWidget(self.waiting_view)
+        self.setCurrentWidget(self.waiting_view)
 
-    def init_server_thread(self):
-        threading.Thread(target=Server.Server.start_server, daemon=True)
+    def init_server(self):
+        print('init server')
+        self.show_waiting_view()
+        start_server(self.waiting_view_controller, self)
