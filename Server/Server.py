@@ -1,31 +1,40 @@
 import socket
 import threading
-
-IP = 'localhost'
-PORT = 1234
-ADDRESS = (IP, PORT)
+import Constants
 
 
-def server(waiting_view_controller, mainView):
-    print('starting server')
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(ADDRESS)
-    server_socket.listen(4)
-    print('server started')
-    print('accepting...')
-    while True:
-        waiting_view_controller.set_connected_players(0)
-        connection, client_address = server_socket.accept()
-        print(connection, client_address)
+class Server:
 
+    def __init__(self, waiting_view_controller, playing_view_controller, mainView):
+        self.server_socket = None
+        self.clients = []
+        self.is_running = False
+        self.waiting_view_controller = waiting_view_controller
+        self.playing_view_controller = playing_view_controller
+        self.mainView = mainView
+        self.init_server()
+        self.thread = self.init_thread()
 
-def start_server(waiting_view_controller, mainView):
-    print('init thread')
-    thread = init_thread(waiting_view_controller, mainView)
-    print('starting thread')
-    thread.start()
-    print('thread started')
+    def init_thread(self):
+        return threading.Thread(target=self._start_thead, daemon=True)
 
+    def init_server(self):
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((Constants.IP, Constants.PORT))
+        self.server_socket.listen(4)
 
-def init_thread(waiting_view_controller, mainView):
-    return threading.Thread(target=server, daemon=True, args=(waiting_view_controller, mainView))
+    def _start_thead(self):
+        while True:
+            if len(self.clients) >= 4:
+                self.is_running = True
+                break
+            self.waiting_view_controller.set_connected_players(len(self.clients))
+            connection, client_address = self.server_socket.accept()
+            self.clients.append((connection, client_address))
+            print(connection, client_address)
+
+    def start(self):
+        self.thread.start()
+
+    def _play(self):
+        print("is playing")

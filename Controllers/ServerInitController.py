@@ -12,4 +12,10 @@ class ServerInitController:
 
     def start_server_action(self):
         print("start server...")
-        self.mainWindow.init_server()
+        port = self.view.port.text()
+        ip = self.view.ip_address.text()
+        if not port or not ip:
+            self.mainWindow.init_server()
+        else:
+            self.mainWindow.init_server(port=int(port), ip=ip)
+

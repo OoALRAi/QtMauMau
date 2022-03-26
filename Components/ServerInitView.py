@@ -1,8 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton
 
-from Constants import IP_ADDRESS
-
 
 class ServerInitView(QWidget):
     def __init__(self):

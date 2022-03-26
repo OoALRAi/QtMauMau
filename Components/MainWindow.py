@@ -2,7 +2,7 @@ from PyQt5 import QtGui, uic
 from PyQt5.QtWidgets import QStackedWidget
 
 from Controllers.WaitingViewController import WaitingViewController
-from Server.Server import start_server
+from Server.Server import Server
 from Components.LoginView import LoginView
 from Components.ServerInitView import ServerInitView
 from Constants import *
@@ -55,10 +55,11 @@ class MainWindow(QStackedWidget):
         if not self.waiting_view:
             self.waiting_view = uic.loadUi(f'{COMPONENTS_UI_PATH}WaitingView.ui')
             self.waiting_view_controller = WaitingViewController(self.waiting_view, self)
+            self.waiting_view_controller.set_ip(IP)
+            self.waiting_view_controller.set_port(PORT)
             self.addWidget(self.waiting_view)
         self.setCurrentWidget(self.waiting_view)
 
-    def init_server(self):
+    def init_server(self, port=PORT, ip=IP):
         print('init server')
-        self.show_waiting_view()
-        start_server(self.waiting_view_controller, self)
+
